@@ -2,35 +2,40 @@ package game;
 
 public class Ship extends Entity {
 	// this is the outline of the ship the flame
-	//private final float[] shipX = {14,-10,-6,-10};
-	//private final float[] shipY = {0,-8,0,8};
-	//private final float[] flameX = {-6,-23,-6};
-	//private final float[] flameY = {-3,0,3};
-	private float angle;
+	private final int[] shipX = {14,-10,-6,-10};
+	private final int[] shipY = {0,-8,0,8};
+	//private final int[] flameX = {-6,-23,-6};
+	//private final int[] flameY = {-3,0,3};
+
+	// These are the outline points of the ship offset by x and y location
+	private int[] shipXOffset = new int[4];
+	private int[] shipYOffset = new int[4];
+
+	// Store the angle of the ship and its velocity of rotation
+	private float angle = 0;
+	private float rVelocity = 0;
+
+	// Constants that determine how fast the ship will accelerate while
+	// the forward key is held and how fast the ship will decelerate
+	// per frame (80% speed on each frame)
 	private final float acceleration = 1;
 	private final float velocityDecay = (float) 0.8;
-	private float rotationalSpeed;
-	boolean turningLeft, turningRight, accelerating, active;
-	int[] xPts, yPts, flameXPts, flameYPts; //store the current locations
-	//of the points used to draw the ship and its flame
-	int shotDelay, shotDelayLeft; //used to determine the rate of firing
-	
+
+	// These booleans will pass whether left,right,or accelerate has been
+	// pressed and pause will be true while player has menu open
+	boolean left = false;
+	boolean right = false;
+	boolean accelerate = false;
+	boolean paused = false;
+
 	// create a new ship at location x,y
 	Ship(float x, float y) {
+		// initialize the Entity Class variables
+		// location, velocity, and contact radius
 		this.setX(x);
 		this.setY(y);
-		this.angle = 0;
-		this.acceleration = 1;
+		this.setXV(0);
+		this.setYV(0);
 		this.setRadius(6);
-		xVelocity=0; // not moving
-		yVelocity=0;
-		turningLeft=false; // not turning
-		turningRight=false;
-		accelerating=false; // not accelerating
-		xPts=new int[4]; // allocate space for the arrays
-		yPts=new int[4];
-		flameXPts=new int[3];
-		flameYPts=new int[3];
-		this.shotDelay=shotDelay; // # of frames between shots
-		shotDelayLeft=0; // ready to shoot
 	}
+}

@@ -1,9 +1,11 @@
 package game;
 
+// Base Class for objects on screen
+
 public class Entity {
 	private float xLocation, yLocation; // position of the entity
 	private float xVelocity, yVelocity; // velocity of the entity
-	private float contactRadius;		  // radius of the contact circle
+	private float contactRadius;		// radius of the contact circle
 	
 	public float getX() { return xLocation; }
 	public float getY() { return yLocation; }
