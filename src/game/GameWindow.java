@@ -38,6 +38,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 
 	// init() is kind of like main for an applet
 	public void init(){
+		Sound.loadSound(); //load all sounds used in game
 		resize(xScreen,yScreen); // Set applet size to 500x400 for now
 		//setBackground(Color.BLACK);
 		addKeyListener(this); // let this class handle key press events
