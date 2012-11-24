@@ -34,6 +34,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 	private long tStart, tEnd; // This is used to tell the elapsed time in the main thread
 	private int period = 25;   // This is the period that the main thread is executed and screen is refreshed
 							   // Note: If this is faster, the game will speed up!
+	private Ship player1;
 
 	// init() is kind of like main for an applet
 	public void init(){
@@ -41,7 +42,10 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		//setBackground(Color.BLACK);
 		addKeyListener(this); // let this class handle key press events
 		screen = createImage(xScreen, yScreen); // This is a graphics buffer that is drawn while old image is displayed
-		backbf = screen.getGraphics();       
+		backbf = screen.getGraphics();
+		
+		player1 = new Ship(250,200);
+		
 		Thread screen_thread = new Thread(this); // thread for screen
 		screen_thread.start();
 	}
@@ -55,7 +59,8 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		backbf.fillRect(0,0,xScreen,yScreen);
 
 		// ADD CODE here to run through the objects lists and repaint based on their new coordinates
-
+		player1.draw(backbf);
+		
 		gfx.drawImage(screen,0,0,this); // copy the backbuffer onto the screen
 	}
 
@@ -75,7 +80,8 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 
 			// CODE HERE to execute one frame of the game
 			// e.g. move objects, detect collisions, trigger animations ...
-
+			player1.update();
+			
 			repaint();
 
 			// wait for a period before executing next iteration of the game
@@ -100,14 +106,28 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		// example
 		if(kEvent.getKeyCode()==KeyEvent.VK_UP){
 			// Have the ship accelerate
+			player1.setAccelerate();
 		}
-		//}else if
+		else if(kEvent.getKeyCode()==KeyEvent.VK_LEFT){
+			player1.setLeft();
+		}
+		else if(kEvent.getKeyCode()==KeyEvent.VK_RIGHT){
+			player1.setRight();
+		}
 	}
 	
 	public void keyReleased(KeyEvent kEvent){
-		// example
 		if(kEvent.getKeyCode()==KeyEvent.VK_UP){
-			// have ship stop accelerating
+			player1.unsetAccelerate();
+			System.out.println("Go");
+		}
+		else if(kEvent.getKeyCode()==KeyEvent.VK_LEFT){
+			player1.unsetLeft();
+			System.out.println("Left");
+		}
+		else if(kEvent.getKeyCode()==KeyEvent.VK_RIGHT){
+			player1.unsetRight();
+			System.out.println("Right");
 		}
 	}
 	
@@ -118,6 +138,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 	public void keyTyped(KeyEvent kEvent){
 		if(kEvent.getKeyCode()==KeyEvent.VK_ESCAPE) {
 			// open the options menu
+			System.out.println("ESCAPE");
 		}
 	}
 
