@@ -3,7 +3,6 @@ package game;
 import java.applet.*;
 import java.awt.*;
 import java.awt.event.*;
-
 /**
  * Main Program which contains game display and logic.
  * 
@@ -29,6 +28,11 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 	 */
 	private static final int xScreen = 500; // screen dimensions 500x400
     private static final int yScreen = 400;   
+    public static boolean boolPause = false;
+    public static boolean boolGravity = false;
+    public static boolean boolGVisible = false;
+    public static boolean boolUnlimitedLives = false;
+    public static boolean boolAsteroids = true;
 	private Image screen;      // this is an object which stores an image for the back buffer
 	private Graphics backbf;   // this is the graphics in the image back buffer
 	private long tStart, tEnd; // This is used to tell the elapsed time in the main thread
@@ -38,14 +42,16 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 
 	// init() is kind of like main for an applet
 	public void init(){
-		Sound.loadSound(); //load all sounds used in game
+		SoundAsteroids.loadSound(); //load all sounds used in game
 		resize(xScreen,yScreen); // Set applet size to 500x400 for now
 		//setBackground(Color.BLACK);
 		addKeyListener(this); // let this class handle key press events
 		screen = createImage(xScreen, yScreen); // This is a graphics buffer that is drawn while old image is displayed
 		backbf = screen.getGraphics();
 		
+		
 		player1 = new Ship(250,200);
+	
 		
 		Thread screen_thread = new Thread(this); // thread for screen
 		screen_thread.start();
@@ -60,7 +66,13 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		backbf.fillRect(0,0,xScreen,yScreen);
 
 		// ADD CODE here to run through the objects lists and repaint based on their new coordinates
-		player1.draw(backbf);
+		
+		if (!boolPause){
+			player1.draw(backbf);
+		}
+		else {
+			Menu.draw(backbf);
+		}
 		
 		gfx.drawImage(screen,0,0,this); // copy the backbuffer onto the screen
 	}
@@ -105,31 +117,57 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 	 */
 	public void keyPressed(KeyEvent kEvent){
 		// example
-		if(kEvent.getKeyCode()==KeyEvent.VK_UP){
+		if(kEvent.getKeyCode()==KeyEvent.VK_UP && !boolPause){
 			// Have the ship accelerate
 			player1.setAccelerate();
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_LEFT){
+		else if(kEvent.getKeyCode()==KeyEvent.VK_LEFT && !boolPause){
 			player1.setLeft();
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_RIGHT){
+		else if(kEvent.getKeyCode()==KeyEvent.VK_RIGHT && !boolPause){
 			player1.setRight();
+		}
+		else if(kEvent.getKeyCode()==KeyEvent.VK_ESCAPE) {
+			// open the options menu
+			System.out.println("ESCAPE");
 		}
 	}
 	
 	public void keyReleased(KeyEvent kEvent){
-		if(kEvent.getKeyCode()==KeyEvent.VK_UP){
+		if(kEvent.getKeyCode()==KeyEvent.VK_UP && !boolPause){
 			player1.unsetAccelerate();
 			System.out.println("Go");
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_LEFT){
+		else if(kEvent.getKeyCode()==KeyEvent.VK_LEFT && !boolPause){
 			player1.unsetLeft();
 			System.out.println("Left");
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_RIGHT){
+		else if(kEvent.getKeyCode()==KeyEvent.VK_RIGHT && !boolPause){
 			player1.unsetRight();
 			System.out.println("Right");
 		}
+		else if(kEvent.getKeyCode()==KeyEvent.VK_ESCAPE){
+			player1.unsetRight();
+			System.out.println("Escape");
+			boolPause = boolPause ^ true;
+			
+		}
+		else if(kEvent.getKeyCode()==KeyEvent.VK_G && boolPause){
+			boolGravity = boolGravity ^ true;
+		}
+		
+		else if(kEvent.getKeyCode()==KeyEvent.VK_V && boolPause){
+			boolGVisible = boolGVisible ^ true;
+		}
+		
+		else if(kEvent.getKeyCode()==KeyEvent.VK_U && boolPause){
+			boolUnlimitedLives = boolUnlimitedLives ^ true;
+		}
+		
+		else if(kEvent.getKeyCode()==KeyEvent.VK_N && boolPause){
+			boolAsteroids = boolAsteroids ^ true;
+		}
+
 	}
 	
 	/**
@@ -137,10 +175,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 	 * also probably menu navigation
 	 */
 	public void keyTyped(KeyEvent kEvent){
-		if(kEvent.getKeyCode()==KeyEvent.VK_ESCAPE) {
-			// open the options menu
-			System.out.println("ESCAPE");
-		}
+		
 	}
 
 }
