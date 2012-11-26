@@ -2,7 +2,7 @@ package game;
 import java.io.File;
 import javax.sound.sampled.*;
 
-public class Sound {
+public class SoundAsteroids {
 
 	// every sound has clip object. must loadSound() before use
 	private static Clip clipBulletHit;
