@@ -1,7 +1,9 @@
 package game;
 
+
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
 
 public class Ship extends Entity {
 	// this is the outline of the ship the flame
@@ -9,7 +11,9 @@ public class Ship extends Entity {
 	private final int[] shipY = {0,-8,0,8};
 	//private final int[] flameX = {-6,-23,-6};
 	//private final int[] flameY = {-3,0,3};
-
+	
+	ArrayList<Shot> shotList = new ArrayList<Shot>();
+	
 	// These are the outline points of the ship offset by x and y location
 	private int[] shipXOffset = new int[4];
 	private int[] shipYOffset = new int[4];
@@ -21,15 +25,18 @@ public class Ship extends Entity {
 	// Constants that determine how fast the ship will accelerate while
 	// the forward key is held and how fast the ship will decelerate
 	// per frame (80% speed on each frame)
-	private final double acceleration = 1;
-	private final double decay = (double) 0.8;
+	private final double acceleration = 0.5;
+	private final double decay = (double) 0.95;
+	private final static int shotDelay = 5;
+	private static int shotsLeft = 0;
 
 	// These booleans will pass whether left,right,or accelerate has been
 	// pressed and pause will be true while player has menu open
-	boolean left = false;
-	boolean right = false;
-	boolean accelerate = false;
-	boolean paused = false;
+	private boolean left = false;
+	private boolean right = false;
+	private boolean accelerate = false;
+	private boolean shooting = false;
+	private boolean paused = false;
 
 	// create a new ship at location x,y which is not moving
 	Ship(double x, double y) {
@@ -69,6 +76,24 @@ public class Ship extends Entity {
 	}
 
 	public void update() {
+		// Create a shot if space is held
+		if (shooting) {
+			if (shotsLeft <= 0) {
+				// add shot to shot list
+				Shot newShot = new Shot(this.getXV(),this.getYV(), this.getX(), this.getY(), angle);
+				shotList.add(newShot);
+				shotsLeft = shotDelay;
+			}
+			else {
+				shotsLeft--;
+			}
+		}
+		// Iterate through list and remove shots if old
+		for (int i=0; i<shotList.size(); i++) {
+			if (shotList.get(i).isOld()) {
+				shotList.remove(i);
+			}
+		}
 		// Add the acceleration to the velocity if accelerating
 		if (accelerate) {
 			// update the velocity
@@ -85,7 +110,21 @@ public class Ship extends Entity {
 		}	
 		// update location
 		this.setX(this.getX() + this.getXV());
+		if (this.getX() > GameWindow.xScreen) {
+			this.setX(this.getX() - GameWindow.xScreen);
+		}
+		else if (this.getX() < 0) {
+			this.setX(this.getX() + GameWindow.xScreen);
+		}
+		
 		this.setY(this.getY() + this.getYV());
+		if (this.getY() > GameWindow.yScreen) {
+			this.setY(this.getY() - GameWindow.yScreen);
+		}
+		else if (this.getY() < 0) {
+			this.setY(this.getY() + GameWindow.yScreen);
+		}
+		
 		// decay by deceleration amount
 		this.setXV(this.getXV() * decay);
 		this.setYV(this.getYV() * decay);
@@ -97,5 +136,8 @@ public class Ship extends Entity {
 	public void unsetLeft() { left = false; }
 	public void setRight() { right = true; }
 	public void unsetRight() { right = false; }
+	public void setSpace() { shooting = true; }
+	public void unsetSpace() { shooting = false; }
+	public ArrayList<Shot> getShots() { return shotList; }
 }
 

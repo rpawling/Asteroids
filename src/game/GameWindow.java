@@ -1,8 +1,12 @@
 package game;
 
+
 import java.applet.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+
+
 /**
  * Main Program which contains game display and logic.
  * 
@@ -26,33 +30,32 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 	/**
 	 * 
 	 */
-	private static final int xScreen = 500; // screen dimensions 500x400
-    private static final int yScreen = 400;   
-    public static boolean boolPause = false;
-    public static boolean boolGravity = false;
-    public static boolean boolGVisible = false;
-    public static boolean boolUnlimitedLives = false;
-    public static boolean boolAsteroids = true;
+	public static boolean boolPause = false;
+	public static boolean boolGravity = false;
+	public static boolean boolGVisible = false;
+	public static boolean boolUnlimitedLives = false;
+	public static boolean boolAsteroids = true;
+	public static final int xScreen = 500; // screen dimensions 500x400 or 800x600
+	public static final int yScreen = 400;
+	public static boolean paused = false; // set to true while menu is open, so that game stops
 	private Image screen;      // this is an object which stores an image for the back buffer
 	private Graphics backbf;   // this is the graphics in the image back buffer
 	private long tStart, tEnd; // This is used to tell the elapsed time in the main thread
 	private int period = 25;   // This is the period that the main thread is executed and screen is refreshed
-							   // Note: If this is faster, the game will speed up!
+	// Note: If this is faster, the game will speed up!
 	private Ship player1;
 
 	// init() is kind of like main for an applet
 	public void init(){
-		SoundAsteroids.loadSound(); //load all sounds used in game
+		//SoundAsteroids.loadSound(); //load all sounds used in game
 		resize(xScreen,yScreen); // Set applet size to 500x400 for now
 		//setBackground(Color.BLACK);
 		addKeyListener(this); // let this class handle key press events
 		screen = createImage(xScreen, yScreen); // This is a graphics buffer that is drawn while old image is displayed
 		backbf = screen.getGraphics();
-		
-		
-		player1 = new Ship(250,200);
-	
-		
+
+		player1 = new Ship(xScreen/2,yScreen/2);
+
 		Thread screen_thread = new Thread(this); // thread for screen
 		screen_thread.start();
 	}
@@ -66,14 +69,19 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		backbf.fillRect(0,0,xScreen,yScreen);
 
 		// ADD CODE here to run through the objects lists and repaint based on their new coordinates
-		
+
 		if (!boolPause){
 			player1.draw(backbf);
+			ArrayList<Shot> shotList = player1.getShots();
+			for (int i=0; i<shotList.size(); i++) {
+				shotList.get(i).draw(backbf);
+			}
 		}
 		else {
 			Menu.draw(backbf);
 		}
-		
+
+
 		gfx.drawImage(screen,0,0,this); // copy the backbuffer onto the screen
 	}
 
@@ -94,7 +102,12 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 			// CODE HERE to execute one frame of the game
 			// e.g. move objects, detect collisions, trigger animations ...
 			player1.update();
-			
+			// update the shot arrays
+			ArrayList<Shot> shotList = player1.getShots();
+			for (int i=0; i<shotList.size(); i++) {
+				shotList.get(i).update();
+			}
+
 			repaint();
 
 			// wait for a period before executing next iteration of the game
@@ -129,53 +142,58 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		}
 		else if(kEvent.getKeyCode()==KeyEvent.VK_ESCAPE) {
 			// open the options menu
-			System.out.println("ESCAPE");
+			//System.out.println("ESCAPE");
+		}
+		else if(kEvent.getKeyCode()==KeyEvent.VK_SPACE && !boolPause){
+			player1.setSpace();
 		}
 	}
-	
+
 	public void keyReleased(KeyEvent kEvent){
 		if(kEvent.getKeyCode()==KeyEvent.VK_UP && !boolPause){
 			player1.unsetAccelerate();
-			System.out.println("Go");
+			//System.out.println("Go");
 		}
 		else if(kEvent.getKeyCode()==KeyEvent.VK_LEFT && !boolPause){
 			player1.unsetLeft();
-			System.out.println("Left");
+			//System.out.println("Left");
 		}
 		else if(kEvent.getKeyCode()==KeyEvent.VK_RIGHT && !boolPause){
 			player1.unsetRight();
-			System.out.println("Right");
+			//stem.out.println("Right");
+		}
+		if(kEvent.getKeyCode()==KeyEvent.VK_SPACE && !boolPause){
+			player1.unsetSpace();
 		}
 		else if(kEvent.getKeyCode()==KeyEvent.VK_ESCAPE){
 			player1.unsetRight();
-			System.out.println("Escape");
 			boolPause = boolPause ^ true;
-			
+
 		}
 		else if(kEvent.getKeyCode()==KeyEvent.VK_G && boolPause){
 			boolGravity = boolGravity ^ true;
 		}
-		
+
 		else if(kEvent.getKeyCode()==KeyEvent.VK_V && boolPause){
 			boolGVisible = boolGVisible ^ true;
 		}
-		
+
 		else if(kEvent.getKeyCode()==KeyEvent.VK_U && boolPause){
 			boolUnlimitedLives = boolUnlimitedLives ^ true;
 		}
-		
+
 		else if(kEvent.getKeyCode()==KeyEvent.VK_N && boolPause){
 			boolAsteroids = boolAsteroids ^ true;
 		}
 
 	}
-	
+
 	/**
 	 * Method used to detect when escape key has been pressed
 	 * also probably menu navigation
 	 */
 	public void keyTyped(KeyEvent kEvent){
-		
+
 	}
 
 }
