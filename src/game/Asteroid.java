@@ -20,13 +20,17 @@ public class Asteroid extends Entity {
 	private int[] asteroidXOffset = new int[12];
 	private int[] asteroidYOffset = new int[12];
 	
-	Asteroid(int x, int y, int xV, int yV, int sizeMultiplier) {
+	Asteroid(double x, double y, double xV, double yV, int sizeMultiplier) {
 		this.setX(x);
 		this.setY(y);
 		this.setXV(xV);
 		this.setYV(yV);
-		this.setRadius(7);
+		this.setRadius(7*sizeMultiplier);
 		size = sizeMultiplier;		
+	}
+	
+	public int getSize() {
+		return (size);
 	}
 	
 	public void update() {
@@ -50,8 +54,11 @@ public class Asteroid extends Entity {
 	
 	public boolean checkForContact(double x, double y, double radius) {
 		// First find distance between the two centers
-		double distance = Math.sqrt(Math.pow((this.getX() - x),2)-Math.pow((this.getY() - y),2));
+		double distance = Math.sqrt(Math.pow((this.getX() - x),2)+Math.pow((this.getY() - y),2));
 		// Check if distance is less than the radii
+		if (radius == 0) {
+			//System.out.println("Distance: " + distance);
+		}
 		if (distance < (this.getRadius() + radius)) {
 			return true;
 		}
@@ -68,6 +75,8 @@ public class Asteroid extends Entity {
 		backbf.drawPolygon(asteroidXOffset,asteroidYOffset,12); // 11 is the number of points
 		backbf.setColor(Color.green);
 		// upper left corner, radius * object size
-		backbf.drawOval((int) (this.getX() + 0.5 - this.getRadius()*size), (int) (this.getY() + 0.5 - this.getRadius()*size), (int)this.getRadius()*size*2, (int)this.getRadius()*size*2);
+		backbf.drawOval((int) (this.getX() + 0.5 - this.getRadius()), (int) (this.getY() + 0.5 - this.getRadius()), (int)this.getRadius()*2, (int)this.getRadius()*2);
+		backbf.setColor(Color.red);
+		backbf.drawOval((int)(this.getX()-1 + 0.5), (int)(this.getY()-1 + 0.5), 2, 2);
 	}
 }

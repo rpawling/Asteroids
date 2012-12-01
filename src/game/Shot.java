@@ -6,7 +6,7 @@ import java.awt.Graphics;
 
 public class Shot extends Entity {
 	private int decayTime = 30; // Number of frames before the shot disappears
-	private final static int shotSpeed = 1; // number of pixels shot moves per frame, will be added to the ship velocity
+	private final static int shotSpeed = 10; // number of pixels shot moves per frame, will be added to the ship velocity
 	
 	
 	// Constructor sets the velocity and initial location of the shot
@@ -15,7 +15,7 @@ public class Shot extends Entity {
 		this.setY(ShipY);
 		this.setXV(shotSpeed*Math.cos(ShipAngle)+ShipVX);
 		this.setYV(shotSpeed*Math.sin(ShipAngle)+ShipVY);
-		this.setRadius(2);
+		this.setRadius(1);
 	}
 	
 	// Update moves the shot based on the velocity, and decrements the decayTime
@@ -54,6 +54,6 @@ public class Shot extends Entity {
 		else // draw the ship gray if the game is paused
 			backbf.setColor(Color.gray);*/
 		backbf.setColor(Color.white);
-		backbf.drawOval((int) (this.getX() + 0.5), (int) (this.getY() + 0.5), 2, 2);
+		backbf.drawOval((int) (this.getX() - this.getRadius() + 0.5), (int) (this.getY() - this.getRadius() + 0.5), (int)(this.getRadius()*2 + 0.5), (int)(this.getRadius()*2 + 0.5));
 	}
 }

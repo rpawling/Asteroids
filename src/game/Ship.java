@@ -76,6 +76,8 @@ public class Ship extends Entity {
 		
 		backbf.setColor(Color.orange);
 		backbf.drawOval((int)this.getX()-6, (int)this.getY()-6, 12, 12);
+		backbf.setColor(Color.red);
+		backbf.drawOval((int)(this.getX()-1 + 0.5), (int)(this.getY()-1 + 0.5), 2, 2);
 	}
 
 	public void update() {

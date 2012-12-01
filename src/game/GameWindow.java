@@ -37,6 +37,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 	public static boolean boolAsteroids = true;
 	public static final int xScreen = 500; // screen dimensions 500x400 or 800x600
 	public static final int yScreen = 400;
+	public int level = 1;		// indicates level and # of asteroids
 	public static boolean paused = false; // set to true while menu is open, so that game stops
 	private Image screen;      // this is an object which stores an image for the back buffer
 	private Graphics backbf;   // this is the graphics in the image back buffer
@@ -46,6 +47,8 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 	private Ship player1;
 	private Asteroid asteroid1, asteroid2, asteroid3;
 	private ArrayList<Asteroid> asteroidList = new ArrayList<Asteroid>();
+	private Asteroid[] asteroidArray;
+	private int numAsteroids;
 
 	// init() is kind of like main for an applet
 	public void init(){
@@ -57,13 +60,14 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		backbf = screen.getGraphics();
 
 		player1 = new Ship(xScreen/2,yScreen/2);
-		asteroidList.add(new Asteroid(100,200,0,0,5));
-		asteroidList.add(new Asteroid(300,100,-1,1,3));
-		asteroidList.add(new Asteroid(200,200,-2,-2,1));
+		this.generateAsteroids();
 
 		Thread screen_thread = new Thread(this); // thread for screen
 		screen_thread.start();
 	}
+
+
+
 	public void paint(Graphics gfx){
 		// This update will implement double buffering. This is done by creating a new
 		// image object which is painted on while the old image is being displayed.  Once
@@ -109,6 +113,13 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 
 			// CODE HERE to execute one frame of the game
 			// e.g. move objects, detect collisions, trigger animations ...
+
+			// If level complete, advance to next level
+			if (asteroidList.isEmpty()) {
+				level++;
+				this.generateAsteroids();
+			}
+
 			player1.update();
 			// update the shot arrays
 			ArrayList<Shot> shotList = player1.getShots();
@@ -121,22 +132,46 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 			// if there is contact with shot, delete asteroid and spawn smaller sizes
 			// *************************************************************************
 			outerLoop:
-			for (int i=0; i<asteroidList.size(); i++) {
-				asteroidList.get(i).update();
-				if (asteroidList.get(i).checkForContact(player1.getX(), player1.getY(), player1.getRadius())) {
-					//asteroidList.remove(i);
-					//continue outerLoop;
-					// change to remove player
-				}
-				for (int j=0; j<shotList.size(); j++) {
+				for (int i=0; i<asteroidList.size(); i++) {
+					asteroidList.get(i).update();
+					if (asteroidList.get(i).checkForContact(player1.getX(), player1.getY(), player1.getRadius())) {
+						//asteroidList.remove(i);
+						//continue outerLoop;
+						// change to remove player
+					}
+					
+					// Check if the player's shot has hit an asteroid
+					// If so, split the asteroid to the smaller size if available
+					// Delete the asteroid
+					for (int j=0; j<shotList.size(); j++) {
 						if (asteroidList.get(i).checkForContact(shotList.get(j).getX(), shotList.get(j).getY(), shotList.get(j).getRadius())) {
+							// Replace with smaller asteroids now
+							// The secret is to set the spawn location on the previous + some random number within the radius
+							if (asteroidList.get(i).getSize()==5) {
+								for (int k = 0; k<2; k++) {
+									double newX = asteroidList.get(i).getX() + Math.random()*asteroidList.get(i).getRadius();
+									double newY = asteroidList.get(i).getY() + Math.random()*asteroidList.get(i).getRadius();
+									Asteroid newAsteroid = new Asteroid(newX, newY, Math.random()*2 + 0.1, Math.random()*2 + 0.1, 3);
+									asteroidList.add(newAsteroid);
+								}
+							}
+							else if (asteroidList.get(i).getSize()==3) {
+								for (int k = 0; k<3; k++) {
+									double newX = asteroidList.get(i).getX() + Math.random()*asteroidList.get(i).getRadius();
+									double newY = asteroidList.get(i).getY() + Math.random()*asteroidList.get(i).getRadius();
+									Asteroid newAsteroid = new Asteroid(newX, newY, Math.random()*3 + 0.1, Math.random()*2 + 0.1, 1);
+									asteroidList.add(newAsteroid);
+								}
+							}
 							asteroidList.remove(i);
 							shotList.remove(j);
+
+							//System.out.println("Contact!");
 							continue outerLoop;
 							// spawn more asteroids!
 						}
+					}
 				}
-			}
 
 			repaint();
 
@@ -224,6 +259,28 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 	 */
 	public void keyTyped(KeyEvent kEvent){
 
+	}
+
+	// Create an 3 asteroids + 1 additional for each new level
+	// If the generated asteroid is too close to the player, then
+	// Recalculate its position
+	public void generateAsteroids() {
+		for (int i=0; i<level+2; i++) {
+			boolean isClose = true;
+			double newX = 0;
+			double newY = 0;
+			while (isClose) {
+				newX = Math.random()*xScreen;
+				newY = Math.random()*yScreen;
+				if (Math.sqrt((Math.pow((newX - player1.getX()),2) + Math.pow((newY - player1.getY()),2))) < 70) {
+					isClose  = true;
+					System.out.println("Asteroid readjusted");
+				}
+				else { isClose = false; }
+			}
+			Asteroid newAsteroid = new Asteroid(newX, newY, Math.random()*1 + 0.1, Math.random()*1 + 0.1, 5);
+			asteroidList.add(newAsteroid);
+		}
 	}
 
 }
