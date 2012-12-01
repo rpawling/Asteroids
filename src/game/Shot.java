@@ -6,7 +6,7 @@ import java.awt.Graphics;
 
 public class Shot extends Entity {
 	private int decayTime = 30; // Number of frames before the shot disappears
-	private final static int shotSpeed = 10; // number of pixels shot moves per frame, will be added to the ship velocity
+	private final static int shotSpeed = 1; // number of pixels shot moves per frame, will be added to the ship velocity
 	
 	
 	// Constructor sets the velocity and initial location of the shot

@@ -44,6 +44,8 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 	private int period = 25;   // This is the period that the main thread is executed and screen is refreshed
 	// Note: If this is faster, the game will speed up!
 	private Ship player1;
+	private Asteroid asteroid1, asteroid2, asteroid3;
+	private ArrayList<Asteroid> asteroidList = new ArrayList<Asteroid>();
 
 	// init() is kind of like main for an applet
 	public void init(){
@@ -55,6 +57,9 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		backbf = screen.getGraphics();
 
 		player1 = new Ship(xScreen/2,yScreen/2);
+		asteroidList.add(new Asteroid(100,200,0,0,5));
+		asteroidList.add(new Asteroid(300,100,-1,1,3));
+		asteroidList.add(new Asteroid(200,200,-2,-2,1));
 
 		Thread screen_thread = new Thread(this); // thread for screen
 		screen_thread.start();
@@ -72,6 +77,9 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 
 		if (!boolPause){
 			player1.draw(backbf);
+			for(int i=0; i<asteroidList.size();i++) {
+				asteroidList.get(i).draw(backbf);
+			}
 			ArrayList<Shot> shotList = player1.getShots();
 			for (int i=0; i<shotList.size(); i++) {
 				shotList.get(i).draw(backbf);
@@ -106,6 +114,28 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 			ArrayList<Shot> shotList = player1.getShots();
 			for (int i=0; i<shotList.size(); i++) {
 				shotList.get(i).update();
+			}
+			// *************************************************************************
+			// update the asteroid arrays and check asteroids for contacts
+			// if there is contact with player, delete player and remove one life
+			// if there is contact with shot, delete asteroid and spawn smaller sizes
+			// *************************************************************************
+			outerLoop:
+			for (int i=0; i<asteroidList.size(); i++) {
+				asteroidList.get(i).update();
+				if (asteroidList.get(i).checkForContact(player1.getX(), player1.getY(), player1.getRadius())) {
+					//asteroidList.remove(i);
+					//continue outerLoop;
+					// change to remove player
+				}
+				for (int j=0; j<shotList.size(); j++) {
+						if (asteroidList.get(i).checkForContact(shotList.get(j).getX(), shotList.get(j).getY(), shotList.get(j).getRadius())) {
+							asteroidList.remove(i);
+							shotList.remove(j);
+							continue outerLoop;
+							// spawn more asteroids!
+						}
+				}
 			}
 
 			repaint();

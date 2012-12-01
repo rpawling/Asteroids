@@ -73,6 +73,9 @@ public class Ship extends Entity {
 
 		// draw the polygon for the ship
 		backbf.drawPolygon(shipXOffset,shipYOffset,4); // 4 is the number of points
+		
+		backbf.setColor(Color.orange);
+		backbf.drawOval((int)this.getX()-6, (int)this.getY()-6, 12, 12);
 	}
 
 	public void update() {
