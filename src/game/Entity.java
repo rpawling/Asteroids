@@ -23,5 +23,18 @@ public abstract class Entity {
 	public double getRadius() { return contactRadius; }
 	
 	abstract public void draw(Graphics backbf);
+	
+	public boolean checkForContact(double x, double y, double radius) {
+		// First find distance between the two centers
+		double distance = Math.sqrt(Math.pow((this.getX() - x),2)+Math.pow((this.getY() - y),2));
+		// Check if distance is less than the radii
+		if (radius == 0) {
+			//System.out.println("Distance: " + distance);
+		}
+		if (distance < (this.getRadius() + radius)) {
+			return true;
+		}
+		else { return false; }
+	}
 	// collision detection can be implemented on the asteroids and the enemy ships
 }

@@ -11,9 +11,9 @@ public class Ship extends Entity {
 	private final int[] shipY = {0,-8,0,8};
 	//private final int[] flameX = {-6,-23,-6};
 	//private final int[] flameY = {-3,0,3};
-	
+
 	ArrayList<Shot> shotList = new ArrayList<Shot>();
-	
+
 	// These are the outline points of the ship offset by x and y location
 	private int[] shipXOffset = new int[4];
 	private int[] shipYOffset = new int[4];
@@ -28,7 +28,7 @@ public class Ship extends Entity {
 	private final double acceleration = 0.5;
 	private final double decay = (double) 0.95;
 	private final static int shotDelay = 5;
-	private static int shotsLeft = 0;
+	private int shotsLeft = 0;
 
 	// These booleans will pass whether left,right,or accelerate has been
 	// pressed and pause will be true while player has menu open
@@ -36,10 +36,11 @@ public class Ship extends Entity {
 	private boolean right = false;
 	private boolean accelerate = false;
 	private boolean shooting = false;
-	private boolean paused = false;
+	private int lives = 3;
+	private Color color;
 
 	// create a new ship at location x,y which is not moving
-	Ship(double x, double y) {
+	Ship(double x, double y, Color shipColor, int numLives) {
 		// initialize the Entity Class variables
 		// location, velocity, and contact radius
 		this.setX(x);
@@ -47,6 +48,8 @@ public class Ship extends Entity {
 		this.setXV(0);
 		this.setYV(0);
 		this.setRadius(6);
+		color = shipColor;
+		lives = numLives;
 	}
 
 	public void draw(Graphics backbf) {
@@ -66,18 +69,15 @@ public class Ship extends Entity {
 			shipYOffset[i] = (int) offset;
 		}
 
-		if(!paused) // active means game is running (not paused)
-			backbf.setColor(Color.white);
-		else // draw the ship gray if the game is paused
-			backbf.setColor(Color.gray);
+		backbf.setColor(color);
 
 		// draw the polygon for the ship
 		backbf.drawPolygon(shipXOffset,shipYOffset,4); // 4 is the number of points
-		
-		backbf.setColor(Color.orange);
-		backbf.drawOval((int)this.getX()-6, (int)this.getY()-6, 12, 12);
-		backbf.setColor(Color.red);
-		backbf.drawOval((int)(this.getX()-1 + 0.5), (int)(this.getY()-1 + 0.5), 2, 2);
+
+		//backbf.setColor(Color.orange);
+		//backbf.drawOval((int)this.getX()-6, (int)this.getY()-6, 12, 12);
+		//backbf.setColor(Color.red);
+		//backbf.drawOval((int)(this.getX()-1 + 0.5), (int)(this.getY()-1 + 0.5), 2, 2);
 	}
 
 	public void update() {
@@ -85,7 +85,7 @@ public class Ship extends Entity {
 		if (shooting) {
 			if (shotsLeft <= 0) {
 				// add shot to shot list
-				Shot newShot = new Shot(this.getXV(),this.getYV(), this.getX(), this.getY(), angle);
+				Shot newShot = new Shot(this.getXV(),this.getYV(), this.getX(), this.getY(), angle, color);
 				shotList.add(newShot);
 				shotsLeft = shotDelay;
 			}
@@ -121,7 +121,7 @@ public class Ship extends Entity {
 		else if (this.getX() < 0) {
 			this.setX(this.getX() + GameWindow.xScreen);
 		}
-		
+
 		this.setY(this.getY() + this.getYV());
 		if (this.getY() > GameWindow.yScreen) {
 			this.setY(this.getY() - GameWindow.yScreen);
@@ -129,12 +129,12 @@ public class Ship extends Entity {
 		else if (this.getY() < 0) {
 			this.setY(this.getY() + GameWindow.yScreen);
 		}
-		
+
 		// decay by deceleration amount
 		this.setXV(this.getXV() * decay);
 		this.setYV(this.getYV() * decay);
 	}
-	
+
 	public void setAccelerate() { accelerate = true; }
 	public void unsetAccelerate() { accelerate = false; }
 	public void setLeft() { left = true; }
@@ -144,5 +144,8 @@ public class Ship extends Entity {
 	public void setSpace() { shooting = true; }
 	public void unsetSpace() { shooting = false; }
 	public ArrayList<Shot> getShots() { return shotList; }
+	public int getNumLives() { return lives; }
+	public void die() { lives--; }
+
 }
 

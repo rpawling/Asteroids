@@ -51,20 +51,6 @@ public class Asteroid extends Entity {
 			this.setY(this.getY() + GameWindow.yScreen);
 		}
 	}
-	
-	public boolean checkForContact(double x, double y, double radius) {
-		// First find distance between the two centers
-		double distance = Math.sqrt(Math.pow((this.getX() - x),2)+Math.pow((this.getY() - y),2));
-		// Check if distance is less than the radii
-		if (radius == 0) {
-			//System.out.println("Distance: " + distance);
-		}
-		if (distance < (this.getRadius() + radius)) {
-			return true;
-		}
-		else { return false; }
-	}
-
 
 	public void draw(Graphics backbf) {
 		for (int i=0; i<12; i++) {
@@ -73,10 +59,10 @@ public class Asteroid extends Entity {
 		}
 		backbf.setColor(Color.white);
 		backbf.drawPolygon(asteroidXOffset,asteroidYOffset,12); // 11 is the number of points
-		backbf.setColor(Color.green);
+		//backbf.setColor(Color.green);
 		// upper left corner, radius * object size
-		backbf.drawOval((int) (this.getX() + 0.5 - this.getRadius()), (int) (this.getY() + 0.5 - this.getRadius()), (int)this.getRadius()*2, (int)this.getRadius()*2);
-		backbf.setColor(Color.red);
-		backbf.drawOval((int)(this.getX()-1 + 0.5), (int)(this.getY()-1 + 0.5), 2, 2);
+		//backbf.drawOval((int) (this.getX() + 0.5 - this.getRadius()), (int) (this.getY() + 0.5 - this.getRadius()), (int)this.getRadius()*2, (int)this.getRadius()*2);
+		//backbf.setColor(Color.red);
+		//backbf.drawOval((int)(this.getX()-1 + 0.5), (int)(this.getY()-1 + 0.5), 2, 2);
 	}
 }
