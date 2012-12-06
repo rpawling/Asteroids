@@ -36,19 +36,31 @@ public class Asteroid extends Entity {
 	public void update() {
 		// First, update location
 		this.setX(this.getX() + this.getXV());
-		if (this.getX() > GameWindow.xScreen) {
-			this.setX(this.getX() - GameWindow.xScreen);
+		if (!GameWindow.boolDeflect) {
+			if (this.getX() > GameWindow.xScreen) {
+				this.setX(this.getX() - GameWindow.xScreen);
+			}
+			else if (this.getX() < 0) {
+				this.setX(this.getX() + GameWindow.xScreen);
+			}
+		} else {
+			if ((this.getX() > GameWindow.xScreen) || (this.getX() < 0)) {
+				this.setXV(-this.getXV());
+			}
 		}
-		else if (this.getX() < 0) {
-			this.setX(this.getX() + GameWindow.xScreen);
-		}
-		
+
 		this.setY(this.getY() + this.getYV());
-		if (this.getY() > GameWindow.yScreen) {
-			this.setY(this.getY() - GameWindow.yScreen);
-		}
-		else if (this.getY() < 0) {
-			this.setY(this.getY() + GameWindow.yScreen);
+		if (!GameWindow.boolDeflect) {
+			if (this.getY() > GameWindow.yScreen) {
+				this.setY(this.getY() - GameWindow.yScreen);
+			}
+			else if (this.getY() < 0) {
+				this.setY(this.getY() + GameWindow.yScreen);
+			}
+		} else {
+			if ((this.getY() > GameWindow.yScreen) || (this.getY() < 0)) {
+				this.setYV(-this.getYV());
+			}
 		}
 	}
 

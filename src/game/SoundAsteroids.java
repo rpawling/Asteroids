@@ -7,6 +7,7 @@ public class SoundAsteroids {
 	// every sound has clip object. must loadSound() before use
 	private static Clip clipBulletHit;
 	private static Clip clipAsteroidHit;
+	private static Clip clipBGM;
 
 	// initialize all sounds
 	public static void loadSound() {
@@ -22,6 +23,11 @@ public class SoundAsteroids {
 			AudioInputStream audioInputStream2 = AudioSystem.getAudioInputStream(file2);
 			clipAsteroidHit = AudioSystem.getClip();
 			clipAsteroidHit.open(audioInputStream2);
+			
+			File file3 = new File("../sounds/RoidRage.wav");
+			AudioInputStream audioInputStream3 = AudioSystem.getAudioInputStream(file3);
+			clipBGM = AudioSystem.getClip();
+			clipBGM.open(audioInputStream3);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -48,4 +54,9 @@ public class SoundAsteroids {
 	public static void asteroid(){
 		play(clipAsteroidHit);
 	}
+	
+	//play BGM
+		public static void music(){
+			play(clipBGM);
+		}
 }

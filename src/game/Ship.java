@@ -9,14 +9,16 @@ public class Ship extends Entity {
 	// this is the outline of the ship the flame
 	private final int[] shipX = {14,-10,-6,-10};
 	private final int[] shipY = {0,-8,0,8};
-	//private final int[] flameX = {-6,-23,-6};
-	//private final int[] flameY = {-3,0,3};
+	private final int[] thrustX = {-8,-25,-8};
+	private final int[] thrustY = {-4,0,4};
 
 	ArrayList<Shot> shotList = new ArrayList<Shot>();
 
 	// These are the outline points of the ship offset by x and y location
 	private int[] shipXOffset = new int[4];
 	private int[] shipYOffset = new int[4];
+	private int[] thrustXOffset = new int[3];
+	private int[] thrustYOffset = new int[3];
 
 	// Store the angle of the ship and its velocity of rotation
 	private double angle = 0;
@@ -68,11 +70,26 @@ public class Ship extends Entity {
 			offset += 0.5;															 // round of result to an integer
 			shipYOffset[i] = (int) offset;
 		}
+		for (int i=0; i<3; i++) {
+			offset =  (double) (thrustX[i]*Math.cos(angle) - thrustY[i]*Math.sin(angle)); // rotate each point
+			offset += this.getX(); 													 // translate each point by x
+			offset += 0.5;															 // round off the result
+			thrustXOffset[i] = (int) offset;
+
+			offset = (double) (thrustX[i]*Math.sin(angle) + thrustY[i]*Math.cos(angle));	 // rotate each point
+			offset += this.getY();												     // translate each point by y
+			offset += 0.5;															 // round of result to an integer
+			thrustYOffset[i] = (int) offset;
+		}
 
 		backbf.setColor(color);
 
 		// draw the polygon for the ship
 		backbf.drawPolygon(shipXOffset,shipYOffset,4); // 4 is the number of points
+		backbf.setColor(Color.red);
+		if (accelerate) {
+			backbf.drawPolygon(thrustXOffset,thrustYOffset,3);
+		}
 
 		//backbf.setColor(Color.orange);
 		//backbf.drawOval((int)this.getX()-6, (int)this.getY()-6, 12, 12);
@@ -115,19 +132,31 @@ public class Ship extends Entity {
 		}	
 		// update location
 		this.setX(this.getX() + this.getXV());
-		if (this.getX() > GameWindow.xScreen) {
-			this.setX(this.getX() - GameWindow.xScreen);
-		}
-		else if (this.getX() < 0) {
-			this.setX(this.getX() + GameWindow.xScreen);
+		if (!GameWindow.boolDeflect) {
+			if (this.getX() > GameWindow.xScreen) {
+				this.setX(this.getX() - GameWindow.xScreen);
+			}
+			else if (this.getX() < 0) {
+				this.setX(this.getX() + GameWindow.xScreen);
+			}
+		} else {
+			if ((this.getX() > GameWindow.xScreen) || (this.getX() < 0)) {
+				this.setXV(-this.getXV());
+			}
 		}
 
 		this.setY(this.getY() + this.getYV());
-		if (this.getY() > GameWindow.yScreen) {
-			this.setY(this.getY() - GameWindow.yScreen);
-		}
-		else if (this.getY() < 0) {
-			this.setY(this.getY() + GameWindow.yScreen);
+		if (!GameWindow.boolDeflect) {
+			if (this.getY() > GameWindow.yScreen) {
+				this.setY(this.getY() - GameWindow.yScreen);
+			}
+			else if (this.getY() < 0) {
+				this.setY(this.getY() + GameWindow.yScreen);
+			}
+		} else {
+			if ((this.getY() > GameWindow.yScreen) || (this.getY() < 0)) {
+				this.setYV(-this.getYV());
+			}
 		}
 
 		// decay by deceleration amount

@@ -25,6 +25,7 @@ public class Alien extends Entity {
 	private int directionTimer = 100;
 	private int shotTimer = 0;
 	private final int shotDelay = 6;
+	private int hitPoints = 3;
 
 	private ArrayList<Shot> shotList = new ArrayList<Shot>();
 
@@ -61,19 +62,31 @@ public class Alien extends Entity {
 
 		//update location of alien
 		this.setX(this.getX() + this.getXV());
-		if (this.getX() > GameWindow.xScreen) {
-			this.setX(this.getX() - GameWindow.xScreen);
-		}
-		else if (this.getX() < 0) {
-			this.setX(this.getX() + GameWindow.xScreen);
+		if (!GameWindow.boolDeflect) {
+			if (this.getX() > GameWindow.xScreen) {
+				this.setX(this.getX() - GameWindow.xScreen);
+			}
+			else if (this.getX() < 0) {
+				this.setX(this.getX() + GameWindow.xScreen);
+			}
+		} else {
+			if ((this.getX() > GameWindow.xScreen) || (this.getX() < 0)) {
+				this.setXV(-this.getXV());
+			}
 		}
 
 		this.setY(this.getY() + this.getYV());
-		if (this.getY() > GameWindow.yScreen) {
-			this.setY(this.getY() - GameWindow.yScreen);
-		}
-		else if (this.getY() < 0) {
-			this.setY(this.getY() + GameWindow.yScreen);
+		if (!GameWindow.boolDeflect) {
+			if (this.getY() > GameWindow.yScreen) {
+				this.setY(this.getY() - GameWindow.yScreen);
+			}
+			else if (this.getY() < 0) {
+				this.setY(this.getY() + GameWindow.yScreen);
+			}
+		} else {
+			if ((this.getY() > GameWindow.yScreen) || (this.getY() < 0)) {
+				this.setYV(-this.getYV());
+			}
 		}
 	}
 
@@ -98,5 +111,12 @@ public class Alien extends Entity {
 	}
 
 	public ArrayList<Shot> getShots() { return shotList; }
+	public boolean hit() {
+		hitPoints--;
+		if (hitPoints <= 0) {
+			return true;
+		}
+		else { return false; }
+	}
 
 }

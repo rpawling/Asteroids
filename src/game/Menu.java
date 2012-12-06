@@ -5,7 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 
 public class Menu {
-	private static final int x = 180;
+	private static final int x = 300;
 	private static final int y = 40;
 
 	public static void draw(Graphics backbf){
@@ -40,6 +40,12 @@ public class Menu {
 		
 		backbf.drawString("[L] Select Starting Level -- ", x, y + 150);
 		toggle(backbf, "<-->", "<-->", false, x + 160, y + 150);
+		
+		backbf.drawString("[D] Deflect On Edges -- ", x, y + 170);
+		toggle(backbf, "<ON>", "<OFF>", GameWindow.boolDeflect, x + 160, y + 170);
+		
+		/*backbf.drawString("[M] Music -- ", x, y + 190);
+		toggle(backbf, "<ON>", "<OFF>", GameWindow.boolMusic, x + 160, y + 190);*/
 	}
 	
 	
