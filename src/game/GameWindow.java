@@ -4,6 +4,13 @@ package game;
 import java.applet.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JTextField;
@@ -39,6 +46,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 	public static boolean boolAsteroids = true;
 	public static boolean boolDeflect = false;
 	public static boolean boolMusic = true;
+	public static boolean boolResetScore = false;
 	public static boolean endGame = false;
 	public static final int xScreen = 800; // screen dimensions 500x400 or 800x600
 	public static final int yScreen = 600;
@@ -68,11 +76,11 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		backbf = screen.getGraphics();
 
 		gravObject = new Gravitational(xScreen/2,yScreen/2);
-		player1 = new Ship(xScreen*0.25,yScreen*0.75,Color.green,3);
-		player2 = new Ship(xScreen*0.75,yScreen*0.25,Color.yellow,3);
+		player1 = new Ship(xScreen*0.25,yScreen*0.75,Color.green,3,0);
+		player2 = new Ship(xScreen*0.75,yScreen*0.25,Color.yellow,3,0);
 		Score.initialize(player1,player2);
 		this.generateAsteroids();
-		SoundAsteroids.music();
+		SoundAsteroids.start_music();
 		//textField.addActionListener(this);
 
 		Thread screen_thread = new Thread(this); // thread for screen
@@ -194,6 +202,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 				for (int i=0; i<shotList.size(); i++) {
 					shotList.get(i).update();
 					if (player2.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
+						SoundAsteroids.explode();
 						if (!boolUnlimitedLives) {
 							player2.die();
 						}
@@ -206,7 +215,6 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 							// GAME OVER player2
 							gameOver();
 						}
-						SoundAsteroids.asteroid();
 					}
 					if (alien != null && alien.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
 						if (alien.hit()) {
@@ -215,8 +223,9 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 							Score.addScore(1, 100);
 							//reset alien timer
 							alienWait = 1000;
+							SoundAsteroids.explode();
 						}
-						SoundAsteroids.bullet();
+						else {SoundAsteroids.bullet();}
 					}
 					if (rogue != null && rogue.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
 						rogue.die();
@@ -226,14 +235,16 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 							Score.addScore(1, 100);
 							//reset rogue
 							rogueWait = 1377;
+							SoundAsteroids.explode();
 						}
-						SoundAsteroids.bullet();
+						else {SoundAsteroids.bullet();}
 					}
 				}
 				shotList = player2.getShots();
 				for (int i=0; i<shotList.size(); i++) {
 					shotList.get(i).update();
 					if (player1.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
+						SoundAsteroids.explode();
 						if (!boolUnlimitedLives) {
 							player1.die();
 						}
@@ -246,7 +257,6 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 							// GAME OVER player1
 							gameOver();
 						}
-						SoundAsteroids.asteroid();
 					}
 					if (alien != null && alien.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
 						if (alien.hit()) {
@@ -255,8 +265,8 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 							Score.addScore(2, 100);
 							//reset alien timer
 							alienWait = 1000;
-						}
-						SoundAsteroids.bullet();
+							SoundAsteroids.explode();
+						} else { SoundAsteroids.bullet(); }
 					}
 					if (rogue != null && rogue.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
 						rogue.die();
@@ -266,8 +276,8 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 							Score.addScore(2, 100);
 							//reset rogue
 							rogueWait = 1377;
-						}
-						SoundAsteroids.bullet();
+							SoundAsteroids.explode();
+						} else { SoundAsteroids.bullet(); }
 					}
 				}
 				if (alien != null) {
@@ -275,6 +285,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 					for (int i=0; i<shotList.size(); i++) {
 						shotList.get(i).update();
 						if (player2.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
+							SoundAsteroids.explode();
 							if (!boolUnlimitedLives) {
 								player2.die();
 							}
@@ -285,9 +296,9 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 								// GAME OVER player2
 								gameOver();
 							}
-							SoundAsteroids.asteroid();
 						}
 						if (player1.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
+							SoundAsteroids.explode();
 							if (!boolUnlimitedLives) {
 								player1.die();
 							}
@@ -298,7 +309,6 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 								// GAME OVER player1
 								gameOver();
 							}
-							SoundAsteroids.asteroid();
 						}
 					}
 				}
@@ -307,6 +317,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 					for (int i=0; i<shotList.size(); i++) {
 						shotList.get(i).update();
 						if (player2.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
+							SoundAsteroids.explode();
 							if (!boolUnlimitedLives) {
 								player2.die();
 							}
@@ -317,9 +328,9 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 								// GAME OVER player2
 								gameOver();
 							}
-							SoundAsteroids.asteroid();
 						}
 						if (player1.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
+							SoundAsteroids.explode();
 							if (!boolUnlimitedLives) {
 								player1.die();
 							}
@@ -330,7 +341,6 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 								// GAME OVER player1
 								gameOver();
 							}
-							SoundAsteroids.asteroid();
 						}
 					}
 				}
@@ -390,7 +400,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 										for (int k = 0; k<2; k++) {
 											double newX = asteroidList.get(i).getX() + Math.random()*asteroidList.get(i).getRadius();
 											double newY = asteroidList.get(i).getY() + Math.random()*asteroidList.get(i).getRadius();
-											Asteroid newAsteroid = new Asteroid(newX, newY, Math.random()*4 - 2, Math.random()*4 - 2, 3);
+											Asteroid newAsteroid = new Asteroid(newX, newY, (Math.random()*4 - 2)*level, (Math.random()*4 - 2)*level, 3);
 											asteroidList.add(newAsteroid);
 										}
 									}
@@ -398,7 +408,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 										for (int k = 0; k<3; k++) {
 											double newX = asteroidList.get(i).getX() + Math.random()*asteroidList.get(i).getRadius();
 											double newY = asteroidList.get(i).getY() + Math.random()*asteroidList.get(i).getRadius();
-											Asteroid newAsteroid = new Asteroid(newX, newY, Math.random()*6 - 3, Math.random()*6 - 3, 1);
+											Asteroid newAsteroid = new Asteroid(newX, newY, (Math.random()*6 - 3)*level, (Math.random()*6 - 3)*level, 1);
 											asteroidList.add(newAsteroid);
 										}
 									}
@@ -416,6 +426,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 					}
 			}
 
+			if (boolMusic) { SoundAsteroids.start_music(); } else { SoundAsteroids.stop_music(); }
 			repaint();
 
 			// wait for a period before executing next iteration of the game
@@ -452,7 +463,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 			// open the options menu
 			//System.out.println("ESCAPE");
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_ALT && !boolPause){
+		else if(kEvent.getKeyCode()==KeyEvent.VK_SPACE && !boolPause){
 			player1.setSpace();
 		}
 		else if(kEvent.getKeyCode()==KeyEvent.VK_A && !boolPause){
@@ -482,7 +493,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 			player1.unsetRight();
 			//stem.out.println("Right");
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_ALT && !boolPause){
+		else if(kEvent.getKeyCode()==KeyEvent.VK_SPACE && !boolPause){
 			player1.unsetSpace();
 		}
 		else if(kEvent.getKeyCode()==KeyEvent.VK_A && !boolPause){
@@ -520,6 +531,19 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		else if(kEvent.getKeyCode()==KeyEvent.VK_D && boolPause){
 			boolDeflect = boolDeflect ^ true;
 		}
+		else if(kEvent.getKeyCode()==KeyEvent.VK_M && boolPause){
+			boolMusic = boolMusic ^ true;
+		}
+		else if(kEvent.getKeyCode()==KeyEvent.VK_R && boolPause){
+			boolResetScore = true;
+			Score.clearHiScores();
+		}
+		else if(kEvent.getKeyCode()==KeyEvent.VK_S && boolPause){
+			saveGame();
+		}
+		else if(kEvent.getKeyCode()==KeyEvent.VK_C && boolPause){
+			loadGame();
+		}
 
 	}
 
@@ -552,7 +576,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 				}
 				else { isClose = false; }
 			}
-			Asteroid newAsteroid = new Asteroid(newX, newY, Math.random()*2 - 1, Math.random()*2 - 1, 5);
+			Asteroid newAsteroid = new Asteroid(newX, newY, (Math.random()*2 - 1)*level, (Math.random()*2 - 1)*level, 5);
 			asteroidList.add(newAsteroid);
 		}
 	}
@@ -585,7 +609,155 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 	public void gameOver() {
 		endGame = true;
 		repaint();
-		System.out.println("End");
 		Score.sortHiscores();
+	}
+
+	public void saveGame() {
+		try{
+			// Create file 
+			FileWriter fstream = new FileWriter("save.txt");
+			BufferedWriter out = new BufferedWriter(fstream);
+
+			// player1 lives score x y xv yv angle
+			out.write("player1 " + player1.getNumLives() + " " + Score.getScore1() + " " + player1.getX() + " " + player1.getY() + " " + player1.getXV() + " " + player1.getYV() + " " + player1.getAngle());
+			out.newLine();
+
+			// player2 lives score x y xv yv angle
+			out.write("player2 " + player2.getNumLives() + " " + Score.getScore2() + " " + player2.getX() + " " + player2.getY() + " " + player2.getXV() + " " + player2.getYV() + " " + player2.getAngle());
+			out.newLine();
+
+			// alien hitPoints x y xv yv
+			if (alien != null) {
+				out.write("alien " + alien.getHits() + " " + alien.getX() + " " + alien.getY() + " " + alien.getXV() + " " + alien.getYV());
+				out.newLine();
+			}
+
+			// rogue lives x y xv yv angle
+			if (rogue != null) {
+				out.write("rogue " + rogue.getNumLives() + " " + rogue.getX() + " " + rogue.getY() + " " + rogue.getXV() + " " + rogue.getYV() + " " + rogue.getAngle());
+				out.newLine();
+			}
+
+			// asteroid size x y xv yv
+			for (int i=0; i<asteroidList.size(); i++) {
+				Asteroid ast = asteroidList.get(i);
+				out.write("asteroid" + ast.getSize() + " " + ast.getX() + " " + ast.getY() + " " + ast.getXV() + " " + ast.getYV());
+				out.newLine();
+			}
+
+			// level level#
+			out.write("level " + level);
+			out.newLine();
+			// gravity boolGravity
+			out.write("gravity " + boolGravity);
+			out.newLine();
+			// gvisible boolGVisible
+			out.write("gvisible " + boolGVisible);
+			out.newLine();
+			// lives boolUnlimitedLives
+			out.write("lives " + boolUnlimitedLives);
+			out.newLine();
+			// numberAsteroids boolAsteroids
+			out.write("numberAsteroids " + boolAsteroids);
+			out.newLine();
+			// deflect boolDeflect
+			out.write("deflect " + boolDeflect);
+			out.newLine();
+			// music boolMusic
+			out.write("music " + boolMusic);
+			out.newLine();
+			out.close();
+		}catch (Exception e){//Catch exception if any
+			System.err.println("Error: " + e.getMessage());
+		}
+	}
+	public void loadGame() {
+		String line;
+		String[] data;
+
+		File scoreFile = new File("save.txt");
+		if (scoreFile.exists()) {
+			System.out.println("reading");
+			BufferedReader reader = null;
+			try {
+				reader = new BufferedReader(new FileReader(scoreFile));
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
+			try {
+				asteroidList.clear();
+				while ((line = reader.readLine()) != null) {
+					// process the line.
+					data = line.split(" ");
+					if (data[0].equals("player1")) {
+						// player1 lives score x y xv yv angle
+						player1 = new Ship(Double.parseDouble(data[3]),Double.parseDouble(data[4]),Color.green,Integer.parseInt(data[1]),Double.parseDouble(data[7]));
+						player1.setXV(Double.parseDouble(data[5]));
+						player1.setYV(Double.parseDouble(data[6]));
+						Score.setScore1(Integer.parseInt(data[2]));
+					}
+					else if (data[0].equals("player2")) {
+						// player2 lives score x y xv yv angle
+						player2 = new Ship(Double.parseDouble(data[3]),Double.parseDouble(data[4]),Color.yellow,Integer.parseInt(data[1]),Double.parseDouble(data[7]));
+						player2.setXV(Double.parseDouble(data[5]));
+						player2.setYV(Double.parseDouble(data[6]));
+						Score.setScore2(Integer.parseInt(data[2]));
+					}
+					else if (data[0].equals("alien")) {
+						// alien hitPoints x y xv yv
+						alien = new Alien();
+						alien.setX(Double.parseDouble(data[2]));
+						alien.setY(Double.parseDouble(data[3]));
+						alien.setXV(Double.parseDouble(data[4]));
+						alien.setYV(Double.parseDouble(data[5]));
+					}
+					else if (data[0].equals("rogue")) {
+						// rogue lives x y xv yv angle
+						player2 = new Ship(Double.parseDouble(data[2]),Double.parseDouble(data[3]),Color.red,Integer.parseInt(data[1]),Double.parseDouble(data[6]));
+						player2.setXV(Double.parseDouble(data[4]));
+						player2.setYV(Double.parseDouble(data[5]));
+					}
+					else if (data[0].equals("asteroid")) {
+						// asteroid size x y xv yv
+						Asteroid asteroid = new Asteroid(Double.parseDouble(data[2]),Double.parseDouble(data[3]),Double.parseDouble(data[4]),Double.parseDouble(data[5]),Integer.parseInt(data[1]));
+						asteroidList.add(asteroid);
+					}
+					else if (data[0].equals("level")) {
+						// level level#
+						level = Integer.parseInt(data[1]);
+					}
+					else if (data[0].equals("gravity")) {
+						// gravity boolGravity
+						if (data[1] == "true") { boolGravity = true; } else { boolGravity = false; }
+					}
+					else if (data[0].equals("gvisible")) {
+						// gravity boolGravity
+						if (data[1] == "true") { boolGVisible = true; } else { boolGVisible = false; }
+					}
+					else if (data[0].equals("lives")) {
+						// lives boolUnlimitedLives
+						if (data[1] == "true") { boolUnlimitedLives = true; } else { boolUnlimitedLives = false; }
+					}
+					else if (data[0].equals("numberAsteroids")) {
+						// numberAsteroids boolAsteroids
+						if (data[1] == "true") { boolAsteroids = true; } else { boolAsteroids = false; }
+					}
+					else if (data[0].equals("deflect")) {
+						// deflect boolDeflect
+						if (data[1] == "true") { boolDeflect = true; } else { boolDeflect = false; }
+					}
+					Score.initialize(player1, player2);
+					
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			try {
+				reader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 }

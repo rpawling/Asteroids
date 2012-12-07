@@ -28,7 +28,6 @@ public class Score {
 
 		File scoreFile = new File(".scores.txt");
 		if (scoreFile.exists()) {
-			System.out.println("exists");
 			BufferedReader reader = null;
 			try {
 				reader = new BufferedReader(new FileReader(scoreFile));
@@ -78,26 +77,6 @@ public class Score {
 			hiScores[8] = 200;
 			hiWinners[9] = "Kyle";
 			hiScores[9] = 100;
-			/*try{
-				// Create file 
-				FileWriter fstream = new FileWriter(".asteroids.txt");
-				BufferedWriter out = new BufferedWriter(fstream);
-				out.write("Alfred 1000");
-				out.write("Bruce 900");
-				out.write("Crane 800");
-				out.write("Dent 700");
-				out.write("Nigma 600");
-				out.write("Grayson 500");
-				out.write("Fries 400");
-				out.write("Strange 300");
-				out.write("Gordon 200");
-				out.write("Kyle 100");
-				//Close the output stream
-				out.close();*/
-			// Fill the lists with the defaults
-			/*}catch (Exception e){//Catch exception if any
-				System.err.println("Error: " + e.getMessage());
-			}*/
 		}
 
 
@@ -157,7 +136,6 @@ public class Score {
 				name = "Unknown";
 			}
 			// Sort in score with other players
-			System.out.println(name);
 			for (int i = 0; i<10; i++) {
 				if (score2 > hiScores[i]) {
 					// copy down one
@@ -243,5 +221,11 @@ public class Score {
 		hiWinners[9] = "Kyle";
 		hiScores[9] = 100;
 	}
+	
+	public static int getScore1() { return score1; }
+	public static int getScore2() { return score2; }
+	public static void setScore1(int score) { score1 = score; }
+	public static void setScore2(int score) { score2 = score; }
+
 
 }

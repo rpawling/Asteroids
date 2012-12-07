@@ -40,9 +40,10 @@ public class Alien extends Entity {
 	public void update() {
 
 		// Check if time to change direction of alien ship randomly
+		// Velocity increases with the level
 		if (directionTimer < 0 ){
-			this.setXV(Math.random()*4 - 2);
-			this.setYV(Math.random()*4 - 2);
+			this.setXV((Math.random()*4 - 2)*GameWindow.level);
+			this.setYV((Math.random()*4 - 2)*GameWindow.level);
 			directionTimer = 100;
 
 		}
@@ -118,5 +119,7 @@ public class Alien extends Entity {
 		}
 		else { return false; }
 	}
+	
+	public int getHits() {return hitPoints;}
 
 }

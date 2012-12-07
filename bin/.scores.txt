@@ -2,9 +2,9 @@ Alfred 1000
 Bruce 900
 Crane 800
 Dent 700
-Broman 685
 Nigma 600
+Fag 520
 Grayson 500
-null 480
-Unknown 405
 Fries 400
+Strange 300
+Ryan 275

@@ -33,7 +33,7 @@ public class Menu {
 		toggle(backbf, "<HIGH>", "<LOW>", GameWindow.boolAsteroids, x + 160, y + 90);
 		
 		backbf.drawString("[R] Reset High Score -- ", x, y + 110);
-		toggle(backbf, "<-->", "<-->", false, x + 160, y + 110);
+		toggle(backbf, "<RESET>", "<OFF>", GameWindow.boolResetScore, x + 160, y + 110);
 		
 		backbf.drawString("[C] Continue Saved Game -- ", x, y + 130);
 		toggle(backbf, "<-->", "<-->", false, x + 160, y + 130);
@@ -44,8 +44,10 @@ public class Menu {
 		backbf.drawString("[D] Deflect On Edges -- ", x, y + 170);
 		toggle(backbf, "<ON>", "<OFF>", GameWindow.boolDeflect, x + 160, y + 170);
 		
-		/*backbf.drawString("[M] Music -- ", x, y + 190);
-		toggle(backbf, "<ON>", "<OFF>", GameWindow.boolMusic, x + 160, y + 190);*/
+		backbf.drawString("[M] Music -- ", x, y + 190);
+		toggle(backbf, "<ON>", "<OFF>", GameWindow.boolMusic, x + 160, y + 190);
+		
+		backbf.drawString("[S] Save Game", x, y + 210);
 	}
 	
 	

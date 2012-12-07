@@ -42,7 +42,7 @@ public class Ship extends Entity {
 	private Color color;
 
 	// create a new ship at location x,y which is not moving
-	Ship(double x, double y, Color shipColor, int numLives) {
+	Ship(double x, double y, Color shipColor, int numLives, double start_angle) {
 		// initialize the Entity Class variables
 		// location, velocity, and contact radius
 		this.setX(x);
@@ -52,6 +52,7 @@ public class Ship extends Entity {
 		this.setRadius(6);
 		color = shipColor;
 		lives = numLives;
+		angle = start_angle;
 	}
 
 	public void draw(Graphics backbf) {
@@ -164,8 +165,8 @@ public class Ship extends Entity {
 		this.setYV(this.getYV() * decay);
 	}
 
-	public void setAccelerate() { accelerate = true; }
-	public void unsetAccelerate() { accelerate = false; }
+	public void setAccelerate() { accelerate = true; SoundAsteroids.start_thrust(); }
+	public void unsetAccelerate() { accelerate = false; SoundAsteroids.stop_thrust(); }
 	public void setLeft() { left = true; }
 	public void unsetLeft() { left = false; }
 	public void setRight() { right = true; }
@@ -175,6 +176,8 @@ public class Ship extends Entity {
 	public ArrayList<Shot> getShots() { return shotList; }
 	public int getNumLives() { return lives; }
 	public void die() { lives--; }
+	public double getAngle() { return angle; }
+	
 
 }
 

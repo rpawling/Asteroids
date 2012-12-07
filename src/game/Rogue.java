@@ -194,6 +194,7 @@ public class Rogue extends Entity {
 	public ArrayList<Shot> getShots() { return shotList; }
 	public int getNumLives() { return lives; }
 	public void die() { lives--; }
+	public double getAngle() { return angle; }
 
 }
 
