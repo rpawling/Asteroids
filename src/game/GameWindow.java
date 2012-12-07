@@ -591,6 +591,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 			player2 = null;
 			Score.setScore1(0);
 			Score.setScore2(0);
+			Score.initialize(player1, player2);
 			player1.resetLives();
 			boolPause = false;
 			boolGravity = false;

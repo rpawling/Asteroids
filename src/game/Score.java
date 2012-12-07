@@ -51,7 +51,6 @@ public class Score {
 			}
 		}
 		else {
-			System.out.println("not exist");
 			// Make a default list to be saved later
 			hiWinners[0] = "Alfred";
 			hiScores[0] = 1000;
