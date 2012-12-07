@@ -191,7 +191,7 @@ public class Score {
 			backbf.drawString(Integer.toString(hiScores[i]), GameWindow.xScreen/2 + 40, 280 + i*20);
 		}
 
-		backbf.drawString("Press ENTER to Start New Game", GameWindow.xScreen/2 - 60, 500);
+		backbf.drawString("Press SPACE to Start New Game", GameWindow.xScreen/2 - 60, 500);
 	}
 
 	public static void addScore(int player, int i) {

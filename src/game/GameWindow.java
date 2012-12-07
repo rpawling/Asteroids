@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 
 
 /**
@@ -65,8 +66,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 	private Rogue rogue = null;
 	private ArrayList<Asteroid> asteroidList = new ArrayList<Asteroid>();
 	private Gravitational gravObject;
-
-
+	
 	// init() is kind of like main for an applet
 	public void init(){
 		SoundAsteroids.loadSound(); //load all sounds used in game
@@ -508,7 +508,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 			player1.unsetRight();
 			//stem.out.println("Right");
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_SPACE && !boolPause){
+		else if(kEvent.getKeyCode()==KeyEvent.VK_SPACE && !boolPause && !endGame){
 			player1.unsetSpace();
 		}
 		else if(player2 != null && kEvent.getKeyCode()==KeyEvent.VK_A && !boolPause){
@@ -579,7 +579,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 				Score.initialize(player1, player2);
 			}
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_ENTER && endGame){
+		else if(kEvent.getKeyCode()==KeyEvent.VK_SPACE && endGame){
 			player1 = new Ship(xScreen/2,yScreen/2,Color.green,3,0);
 			asteroidList.clear();
 			level = 1;
