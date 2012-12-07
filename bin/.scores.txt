@@ -4,7 +4,7 @@ Crane 800
 Dent 700
 Nigma 600
 Grayson 500
+COOL 415
 Fries 400
 Unknown 370
 Strange 300
-Gordon 200
