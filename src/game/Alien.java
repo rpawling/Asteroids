@@ -42,8 +42,8 @@ public class Alien extends Entity {
 		// Check if time to change direction of alien ship randomly
 		// Velocity increases with the level
 		if (directionTimer < 0 ){
-			this.setXV((Math.random()*4 - 2)*GameWindow.level);
-			this.setYV((Math.random()*4 - 2)*GameWindow.level);
+			this.setXV((Math.random()*4 - 2)*0.5*GameWindow.level);
+			this.setYV((Math.random()*4 - 2)*0.5*GameWindow.level);
 			directionTimer = 100;
 
 		}

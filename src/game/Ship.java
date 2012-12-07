@@ -22,7 +22,7 @@ public class Ship extends Entity {
 
 	// Store the angle of the ship and its velocity of rotation
 	private double angle = 0;
-	private final double rVelocity = 0.1;
+	private double rVelocity = 0.1;
 
 	// Constants that determine how fast the ship will accelerate while
 	// the forward key is held and how fast the ship will decelerate
@@ -177,6 +177,7 @@ public class Ship extends Entity {
 	public int getNumLives() { return lives; }
 	public void die() { lives--; }
 	public double getAngle() { return angle; }
+	public void resetLives() { lives = 3; }
 	
 
 }

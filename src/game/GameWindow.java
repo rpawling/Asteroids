@@ -13,7 +13,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.JTextField;
+import javax.swing.JFileChooser;
 
 
 /**
@@ -47,6 +47,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 	public static boolean boolDeflect = false;
 	public static boolean boolMusic = true;
 	public static boolean boolResetScore = false;
+	public static boolean boolPlayers = false;
 	public static boolean endGame = false;
 	public static final int xScreen = 800; // screen dimensions 500x400 or 800x600
 	public static final int yScreen = 600;
@@ -76,8 +77,9 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		backbf = screen.getGraphics();
 
 		gravObject = new Gravitational(xScreen/2,yScreen/2);
-		player1 = new Ship(xScreen*0.25,yScreen*0.75,Color.green,3,0);
-		player2 = new Ship(xScreen*0.75,yScreen*0.25,Color.yellow,3,0);
+		player1 = new Ship(xScreen/2,yScreen/2,Color.green,3,0);
+		player2 = null;
+		//player2 = new Ship(xScreen*0.75,yScreen*0.25,Color.yellow,3,0);
 		Score.initialize(player1,player2);
 		this.generateAsteroids();
 		SoundAsteroids.start_music();
@@ -102,7 +104,9 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 
 		if (!boolPause && !endGame){
 			player1.draw(backbf);
-			player2.draw(backbf);
+			if (player2 != null) {
+				player2.draw(backbf);
+			}
 			gravObject.draw(backbf);
 			if (alien != null) {
 				alien.draw(backbf);
@@ -114,9 +118,11 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 			for (int i=0; i<shotList.size(); i++) {
 				shotList.get(i).draw(backbf);
 			}
-			shotList = player2.getShots();
-			for (int i=0; i<shotList.size(); i++) {
-				shotList.get(i).draw(backbf);
+			if (player2 != null) {
+				shotList = player2.getShots();
+				for (int i=0; i<shotList.size(); i++) {
+					shotList.get(i).draw(backbf);
+				}
 			}
 			if (alien != null) { 
 				shotList = alien.getShots();
@@ -171,6 +177,10 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 					Score.addScore(2, 100*level);
 					level++;
 					this.generateAsteroids();
+					player1.resetLives();
+					if (player2 != null) {
+						player2.resetLives();
+					}
 				}
 
 				// Update alien location if its spawned
@@ -192,16 +202,19 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 
 				// Update player location
 				player1.update();
-				player2.update();
 				gravObject.gravity(player1);
-				gravObject.gravity(player2);
+				if (player2 != null) {
+					player2.update();
+					gravObject.gravity(player2);
+				}
+
 
 				// update the shot arrays
 				// Check if contact with other player
 				ArrayList<Shot> shotList = player1.getShots();
 				for (int i=0; i<shotList.size(); i++) {
 					shotList.get(i).update();
-					if (player2.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
+					if (player2 != null && player2.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
 						SoundAsteroids.explode();
 						if (!boolUnlimitedLives) {
 							player2.die();
@@ -240,51 +253,53 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 						else {SoundAsteroids.bullet();}
 					}
 				}
-				shotList = player2.getShots();
-				for (int i=0; i<shotList.size(); i++) {
-					shotList.get(i).update();
-					if (player1.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
-						SoundAsteroids.explode();
-						if (!boolUnlimitedLives) {
-							player1.die();
-						}
-						// reward player 2 with 100 points
-						Score.addScore(2, 100);
-						if (player1.getNumLives() > 0) {
-							spawnPlayer(player1);
-						}
-						else {
-							// GAME OVER player1
-							gameOver();
-						}
-					}
-					if (alien != null && alien.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
-						if (alien.hit()) {
-							alien = null;
-							// reward player 2 with points
-							Score.addScore(2, 100);
-							//reset alien timer
-							alienWait = 1000;
+				if (player2 != null) {
+					shotList = player2.getShots();
+					for (int i=0; i<shotList.size(); i++) {
+						shotList.get(i).update();
+						if (player1.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
 							SoundAsteroids.explode();
-						} else { SoundAsteroids.bullet(); }
-					}
-					if (rogue != null && rogue.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
-						rogue.die();
-						if (rogue.getNumLives() <= 0) {
-							rogue = null;
-							// reward player 2 with points
+							if (!boolUnlimitedLives) {
+								player1.die();
+							}
+							// reward player 2 with 100 points
 							Score.addScore(2, 100);
-							//reset rogue
-							rogueWait = 1377;
-							SoundAsteroids.explode();
-						} else { SoundAsteroids.bullet(); }
+							if (player1.getNumLives() > 0) {
+								spawnPlayer(player1);
+							}
+							else {
+								// GAME OVER player1
+								gameOver();
+							}
+						}
+						if (alien != null && alien.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
+							if (alien.hit()) {
+								alien = null;
+								// reward player 2 with points
+								Score.addScore(2, 100);
+								//reset alien timer
+								alienWait = 1000;
+								SoundAsteroids.explode();
+							} else { SoundAsteroids.bullet(); }
+						}
+						if (rogue != null && rogue.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
+							rogue.die();
+							if (rogue.getNumLives() <= 0) {
+								rogue = null;
+								// reward player 2 with points
+								Score.addScore(2, 100);
+								//reset rogue
+								rogueWait = 1377;
+								SoundAsteroids.explode();
+							} else { SoundAsteroids.bullet(); }
+						}
 					}
 				}
 				if (alien != null) {
 					shotList = alien.getShots();
 					for (int i=0; i<shotList.size(); i++) {
 						shotList.get(i).update();
-						if (player2.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
+						if (player2 != null && player2.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
 							SoundAsteroids.explode();
 							if (!boolUnlimitedLives) {
 								player2.die();
@@ -316,7 +331,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 					shotList = rogue.getShots();
 					for (int i=0; i<shotList.size(); i++) {
 						shotList.get(i).update();
-						if (player2.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
+						if (player2 != null && player2.checkForContact(shotList.get(i).getX(), shotList.get(i).getY(), shotList.get(i).getRadius())) {
 							SoundAsteroids.explode();
 							if (!boolUnlimitedLives) {
 								player2.die();
@@ -365,7 +380,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 							}
 							SoundAsteroids.asteroid();
 						}
-						else if (asteroidList.get(i).checkForContact(player2.getX(), player2.getY(), player2.getRadius())) {
+						else if (player2 != null && asteroidList.get(i).checkForContact(player2.getX(), player2.getY(), player2.getRadius())) {
 							// Subtract one life, move player to restart location
 							if(!boolUnlimitedLives) {
 								player2.die();
@@ -400,7 +415,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 										for (int k = 0; k<2; k++) {
 											double newX = asteroidList.get(i).getX() + Math.random()*asteroidList.get(i).getRadius();
 											double newY = asteroidList.get(i).getY() + Math.random()*asteroidList.get(i).getRadius();
-											Asteroid newAsteroid = new Asteroid(newX, newY, (Math.random()*4 - 2)*level, (Math.random()*4 - 2)*level, 3);
+											Asteroid newAsteroid = new Asteroid(newX, newY, (Math.random()*4 - 2)*0.5*level, (Math.random()*4 - 2)*0.5*level, 3);
 											asteroidList.add(newAsteroid);
 										}
 									}
@@ -408,7 +423,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 										for (int k = 0; k<3; k++) {
 											double newX = asteroidList.get(i).getX() + Math.random()*asteroidList.get(i).getRadius();
 											double newY = asteroidList.get(i).getY() + Math.random()*asteroidList.get(i).getRadius();
-											Asteroid newAsteroid = new Asteroid(newX, newY, (Math.random()*6 - 3)*level, (Math.random()*6 - 3)*level, 1);
+											Asteroid newAsteroid = new Asteroid(newX, newY, (Math.random()*6 - 3)*0.5*level, (Math.random()*6 - 3)*0.5*level, 1);
 											asteroidList.add(newAsteroid);
 										}
 									}
@@ -421,7 +436,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 								}
 
 							}
-
+							if (player2 == null) { l++; }
 						}
 					}
 			}
@@ -466,16 +481,16 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		else if(kEvent.getKeyCode()==KeyEvent.VK_SPACE && !boolPause){
 			player1.setSpace();
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_A && !boolPause){
+		else if(player2 != null && kEvent.getKeyCode()==KeyEvent.VK_A && !boolPause){
 			player2.setLeft();
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_W && !boolPause){
+		else if(player2 != null && kEvent.getKeyCode()==KeyEvent.VK_W && !boolPause){
 			player2.setAccelerate();
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_D && !boolPause){
+		else if(player2 != null && kEvent.getKeyCode()==KeyEvent.VK_D && !boolPause){
 			player2.setRight();
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_CONTROL && !boolPause){
+		else if(player2 != null && kEvent.getKeyCode()==KeyEvent.VK_CONTROL && !boolPause){
 			player2.setSpace();
 		}
 	}
@@ -496,20 +511,19 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		else if(kEvent.getKeyCode()==KeyEvent.VK_SPACE && !boolPause){
 			player1.unsetSpace();
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_A && !boolPause){
+		else if(player2 != null && kEvent.getKeyCode()==KeyEvent.VK_A && !boolPause){
 			player2.unsetLeft();
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_W && !boolPause){
+		else if(player2 != null && kEvent.getKeyCode()==KeyEvent.VK_W && !boolPause){
 			player2.unsetAccelerate();
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_D && !boolPause){
+		else if(player2 != null && kEvent.getKeyCode()==KeyEvent.VK_D && !boolPause){
 			player2.unsetRight();
 		}
-		else if(kEvent.getKeyCode()==KeyEvent.VK_CONTROL && !boolPause){
+		else if(player2 != null && kEvent.getKeyCode()==KeyEvent.VK_CONTROL && !boolPause){
 			player2.unsetSpace();
 		}
 		else if(kEvent.getKeyCode()==KeyEvent.VK_ESCAPE){
-			player1.unsetRight();
 			boolPause = boolPause ^ true;
 
 		}
@@ -544,6 +558,27 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		else if(kEvent.getKeyCode()==KeyEvent.VK_C && boolPause){
 			loadGame();
 		}
+		else if(kEvent.getKeyCode()==KeyEvent.VK_L && boolPause){
+			asteroidList.clear();
+			level++;
+			this.generateAsteroids();
+			player1.resetLives();
+			if (player2 != null) {
+				player2.resetLives();
+			}
+		}
+		else if(kEvent.getKeyCode()==KeyEvent.VK_P && boolPause){
+			boolPlayers = boolPlayers ^ true;
+			if (boolPlayers) {
+				player2 = new Ship(xScreen*0.75,yScreen*0.25,Color.yellow,3,0);
+				Score.initialize(player1, player2);
+				spawnPlayer(player2);
+			}
+			else {
+				player2 = null;
+				Score.initialize(player1, player2);
+			}
+		}
 
 	}
 
@@ -559,7 +594,9 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 	// If the generated asteroid is too close to the player, then
 	// Recalculate its position
 	public void generateAsteroids() {
-		for (int i=0; i<level+2; i++) {
+		int numAsteroids = level+2;
+		if (!boolAsteroids) { numAsteroids /= 2; }
+		for (int i=0; i<numAsteroids; i++) {
 			boolean isClose = true;
 			double newX = 0;
 			double newY = 0;
@@ -570,13 +607,13 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 					isClose  = true;
 					//System.out.println("Asteroid readjusted");
 				}
-				if (Math.sqrt((Math.pow((newX - player2.getX()),2) + Math.pow((newY - player2.getY()),2))) < 80) {
+				if (player2 != null && Math.sqrt((Math.pow((newX - player2.getX()),2) + Math.pow((newY - player2.getY()),2))) < 80) {
 					isClose  = true;
 					//System.out.println("Asteroid readjusted");
 				}
 				else { isClose = false; }
 			}
-			Asteroid newAsteroid = new Asteroid(newX, newY, (Math.random()*2 - 1)*level, (Math.random()*2 - 1)*level, 5);
+			Asteroid newAsteroid = new Asteroid(newX, newY, (Math.random()*2 - 1)*0.5*level, (Math.random()*2 - 1)*0.5*level, 5);
 			asteroidList.add(newAsteroid);
 		}
 	}
@@ -614,8 +651,12 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 
 	public void saveGame() {
 		try{
-			// Create file 
-			FileWriter fstream = new FileWriter("save.txt");
+			// Create file
+            JFileChooser fc = new JFileChooser();
+            File dir = new File(".");
+            fc.setCurrentDirectory(dir);
+            fc.showSaveDialog(null);
+            FileWriter fstream = new FileWriter(fc.getSelectedFile());
 			BufferedWriter out = new BufferedWriter(fstream);
 
 			// player1 lives score x y xv yv angle
@@ -623,8 +664,10 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 			out.newLine();
 
 			// player2 lives score x y xv yv angle
-			out.write("player2 " + player2.getNumLives() + " " + Score.getScore2() + " " + player2.getX() + " " + player2.getY() + " " + player2.getXV() + " " + player2.getYV() + " " + player2.getAngle());
-			out.newLine();
+			if (player2 != null) {
+				out.write("player2 " + player2.getNumLives() + " " + Score.getScore2() + " " + player2.getX() + " " + player2.getY() + " " + player2.getXV() + " " + player2.getYV() + " " + player2.getAngle());
+				out.newLine();
+			}
 
 			// alien hitPoints x y xv yv
 			if (alien != null) {
@@ -672,12 +715,16 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		}
 	}
 	public void loadGame() {
+
 		String line;
 		String[] data;
-
-		File scoreFile = new File("save.txt");
+		
+		JFileChooser fc = new JFileChooser();
+        File dir = new File(".");
+        fc.setCurrentDirectory(dir);
+        fc.showOpenDialog(null);
+        File scoreFile = fc.getSelectedFile();
 		if (scoreFile.exists()) {
-			System.out.println("reading");
 			BufferedReader reader = null;
 			try {
 				reader = new BufferedReader(new FileReader(scoreFile));
@@ -747,7 +794,7 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 						if (data[1] == "true") { boolDeflect = true; } else { boolDeflect = false; }
 					}
 					Score.initialize(player1, player2);
-					
+
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -760,4 +807,5 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 		}
 
 	}
+
 }

@@ -30,12 +30,14 @@ public class SoundAsteroids {
 			AudioInputStream audioInputStream3 = AudioSystem.getAudioInputStream(file3);
 			clipBGM = AudioSystem.getClip();
 			clipBGM.open(audioInputStream3);
+			FloatControl volume = (FloatControl) clipBGM.getControl(FloatControl.Type.MASTER_GAIN);
+			volume.setValue((float) -3);
 			
 			File file4 = new File("../sounds/thrust.wav");
 			AudioInputStream audioInputStream4 = AudioSystem.getAudioInputStream(file4);
 			clipThrust = AudioSystem.getClip();
 			clipThrust.open(audioInputStream4);
-			FloatControl volume = (FloatControl) clipThrust.getControl(FloatControl.Type.MASTER_GAIN);
+			volume = (FloatControl) clipThrust.getControl(FloatControl.Type.MASTER_GAIN);
 			volume.setValue((float) 6.0206);
 			
 			File file5 = new File("../sounds/ShipExplode.wav");

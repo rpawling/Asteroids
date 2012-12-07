@@ -5,9 +5,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.io.*;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
 
 public class Score {
 
@@ -15,12 +13,10 @@ public class Score {
 	private static final int y = 0;
 	private static int score1 = 0;
 	private static int score2 = 0;
-	private static int hiscore = 0;
 	private static Ship player1;
 	private static Ship player2;
 	private static String[] hiWinners = new String[10];
 	private static int[] hiScores = new int[10];
-	private File scoreFile;
 	// Initialize the highscore table by loading .asteroids file and parsing into list of player scores
 	public static void initialize(Ship ship1, Ship ship2) {
 		player1 = ship1;
@@ -87,12 +83,13 @@ public class Score {
 		//set font
 		Font f = new Font("Dialog", Font.BOLD, 12);
 		backbf.setFont(f);
-
-		backbf.setColor(Color.YELLOW);
-		backbf.drawString("Score:  " + Integer.toString(score2), x + GameWindow.xScreen - 90, y + 30);
-		if (!GameWindow.boolUnlimitedLives) {
-			backbf.drawString("Lives:  " + Integer.toString(player2.getNumLives()), x + GameWindow.xScreen - 90, y + 50);
-		} else { backbf.drawString("Lives:  Inf", x + GameWindow.xScreen - 90, y + 50); }
+		if (player2 != null) {
+			backbf.setColor(Color.YELLOW);
+			backbf.drawString("Score:  " + Integer.toString(score2), x + GameWindow.xScreen - 90, y + 30);
+			if (!GameWindow.boolUnlimitedLives) {
+				backbf.drawString("Lives:  " + Integer.toString(player2.getNumLives()), x + GameWindow.xScreen - 90, y + 50);
+			} else { backbf.drawString("Lives:  Inf", x + GameWindow.xScreen - 90, y + 50); }
+		}
 
 		backbf.setColor(Color.GREEN);
 		backbf.drawString("Score:  " + Integer.toString(score1), x + 30, y + 30);
@@ -129,24 +126,26 @@ public class Score {
 				}
 			}
 		}
-		if (score2 > hiScores[9]) {
-			// Query for player 2's name
-			String name = JOptionPane.showInputDialog("Player2 Enter Name for Hiscore:");
-			if (name == null) {
-				name = "Unknown";
-			}
-			// Sort in score with other players
-			for (int i = 0; i<10; i++) {
-				if (score2 > hiScores[i]) {
-					// copy down one
-					for (int j=9; j>i; j--) {
-						hiScores[j] = hiScores[j-1];
-						hiWinners[j] = hiWinners[j-1];
+		if (player2 != null) {
+			if (score2 > hiScores[9]) {
+				// Query for player 2's name
+				String name = JOptionPane.showInputDialog("Player2 Enter Name for Hiscore:");
+				if (name == null) {
+					name = "Unknown";
+				}
+				// Sort in score with other players
+				for (int i = 0; i<10; i++) {
+					if (score2 > hiScores[i]) {
+						// copy down one
+						for (int j=9; j>i; j--) {
+							hiScores[j] = hiScores[j-1];
+							hiWinners[j] = hiWinners[j-1];
+						}
+						// replace with the player
+						hiScores[i] = score2;
+						hiWinners[i] = name;
+						break;
 					}
-					// replace with the player
-					hiScores[i] = score2;
-					hiWinners[i] = name;
-					break;
 				}
 			}
 		}
@@ -170,12 +169,14 @@ public class Score {
 		backbf.setFont(f);
 		backbf.setColor(Color.WHITE);
 		backbf.drawString("GAME OVER", GameWindow.xScreen/2 - 110, 100);
-		if (player1.getNumLives() <= 0) {
-			backbf.setColor(Color.YELLOW);
-			backbf.drawString("Player 2 Wins!", GameWindow.xScreen/2 - 120, 150);
-		} else {
-			backbf.setColor(Color.GREEN);
-			backbf.drawString("Player 1 Wins!", GameWindow.xScreen/2 - 120, 150);
+		if (player2 != null) {
+			if (player1.getNumLives() <= 0) {
+				backbf.setColor(Color.YELLOW);
+				backbf.drawString("Player 2 Wins!", GameWindow.xScreen/2 - 120, 150);
+			} else {
+				backbf.setColor(Color.GREEN);
+				backbf.drawString("Player 1 Wins!", GameWindow.xScreen/2 - 120, 150);
+			}
 		}
 		f = new Font("Dialog", Font.BOLD, 12);
 		backbf.setFont(f);
@@ -221,7 +222,7 @@ public class Score {
 		hiWinners[9] = "Kyle";
 		hiScores[9] = 100;
 	}
-	
+
 	public static int getScore1() { return score1; }
 	public static int getScore2() { return score2; }
 	public static void setScore1(int score) { score1 = score; }
