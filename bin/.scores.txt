@@ -1,10 +1,10 @@
-Ryan 1335
 Alfred 1000
 Bruce 900
 Crane 800
 Dent 700
 Nigma 600
-Joker 560
 Grayson 500
 Fries 400
 Strange 300
+Gordon 200
+HElk 180

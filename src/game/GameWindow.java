@@ -579,6 +579,30 @@ public class GameWindow extends Applet implements Runnable, KeyListener {
 				Score.initialize(player1, player2);
 			}
 		}
+		else if(kEvent.getKeyCode()==KeyEvent.VK_ENTER && endGame){
+			player1 = new Ship(xScreen/2,yScreen/2,Color.green,3,0);
+			asteroidList.clear();
+			level = 1;
+			generateAsteroids();
+			alien = null;
+			alienWait = 1000;
+			rogue = null;
+			rogueWait = 1777;	
+			player2 = null;
+			Score.setScore1(0);
+			Score.setScore2(0);
+			player1.resetLives();
+			boolPause = false;
+			boolGravity = false;
+			boolGVisible = false;
+			boolUnlimitedLives = false;
+			boolAsteroids = true;
+			boolDeflect = false;
+			boolMusic = true;
+			boolResetScore = false;
+			boolPlayers = false;
+			endGame = false;	
+		}
 
 	}
 

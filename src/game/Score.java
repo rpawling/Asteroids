@@ -104,14 +104,12 @@ public class Score {
 
 	public static void sortHiscores() {
 		if (score1 > hiScores[9]) {
-			System.out.println("query");
 			// Query for player 1's name
 			String name = JOptionPane.showInputDialog("Player1 Enter Name for Hiscore:");
 			if (name == null) {
 				name = "Unknown";
 			}
 			// Sort in score with other players
-			System.out.println(name);
 			for (int i = 0; i<10; i++) {
 				if (score1 > hiScores[i]) {
 					// copy down one
@@ -187,6 +185,8 @@ public class Score {
 			backbf.drawString(hiWinners[i], GameWindow.xScreen/2 - 20, 280 + i*20);
 			backbf.drawString(Integer.toString(hiScores[i]), GameWindow.xScreen/2 + 40, 280 + i*20);
 		}
+		
+		backbf.drawString("Press ENTER to Start New Game", GameWindow.xScreen/2 - 60, 500);
 	}
 
 	public static void addScore(int player, int i) {
